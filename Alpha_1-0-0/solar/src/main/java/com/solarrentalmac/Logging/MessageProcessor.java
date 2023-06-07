@@ -106,18 +106,20 @@ public class MessageProcessor {
     
         // If the setting is not found, set a default value based on the message type.
         if (displaySetting == null) {
+            MessageProcessor.processMessage(2, "Display Setting: " + displaySetting, true);
             switch (messageType) {
-                case "[Info]: ":
-                case "[Warning]: ":
-                case "[Error]: ":
-                case "[System]: ":
-                case "[Debug]: ":
+                case "Info ":
+                case "Warning ":
+                case "Error ":
+                case "System ":
+                case "Debug ":
                     displaySetting = "true";
                 break;
 
                 default:
                     // This should never happen, but it might be worth logging or throwing an error.
                     displaySetting = "false";
+                    MessageProcessor.processMessage(2, "Display Setting: " + displaySetting, true);
                     break;
             }
         }

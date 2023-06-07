@@ -8,6 +8,7 @@ public class SetupController {
     public static void Start() {
         Boolean firstTime = FirstTimeChecker.checkFirstTime();
         if(firstTime){
+            SettingsController.LoadSettings();
             SetupMenu.mainSetupMenu();
         } else {
             VersionController.checkForUpdates();

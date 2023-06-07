@@ -16,10 +16,10 @@ public class AutoGenerateLog {
     public static String LogDirectory = SettingsController.getSetting("Log Directory");
     public static Random ran = new Random();
     public static String FileName;
-    public static String FileLogType = "all";
+    public static String FileLogTypes = "all";
 
     public static void autoDump(String FileLogType) {
-        FileLogType = SettingsController.getSetting("Log Type");
+        FileLogTypes = SettingsController.getSetting("Log Type");
         List<String> log = new ArrayList<>();
         String logTime = "Report was Generated at: " + LocalDateTime.now();
 

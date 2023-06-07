@@ -92,6 +92,9 @@ public class ConsoleHandler {
                     MessageProcessor.sortedVisibleToConsole.set(i, false);
                 }
             }
+        } else {
+            System.out.println("Console: ");
+            System.out.println("No Messages");
         }
         return null;
     }
