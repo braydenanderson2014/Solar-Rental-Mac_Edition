@@ -66,7 +66,9 @@ public class AutoSetup {
         if(SettingsController.checkSetting("System Color") == false) {
             SettingsController.setProperty("System Color", "Green");
         }
-        
+        if(SettingsController.checkSetting("Log Type") == false) {
+            SettingsController.setProperty("Log Type", "all");
+        }
 
 
         SettingsController.saveSettings();
