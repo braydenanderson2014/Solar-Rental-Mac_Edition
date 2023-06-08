@@ -30,7 +30,7 @@ public class SetupMenu {
                 break;
             default:
                 MessageProcessor.processMessage(-1, "Invalid option, try again!", true);
-                AutoGenerateLog.autoDump("all");
+                //AutoGenerateLog.autoDump("all");
                 mainSetupMenu();
                 break;
         }

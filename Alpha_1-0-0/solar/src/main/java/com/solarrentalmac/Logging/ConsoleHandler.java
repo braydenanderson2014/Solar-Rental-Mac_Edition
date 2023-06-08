@@ -73,29 +73,7 @@ public class ConsoleHandler {
     }
 
     public static String getConsole() {
-        MessageProcessor.sortMessages();
-        int size = MessageProcessor.sortedMessages.size();
-        int maxMessagesToDisplay = 5; // replace with your variable
-        int startMessageIndex = Math.max(0, size - maxMessagesToDisplay);
-
-        if (size > 0) {
-            System.out.println("Console: ");
-
-            for (int i = startMessageIndex; i < size; i++) {
-                if (MessageProcessor.sortedVisibleToConsole.get(i) == true) {
-                    String messageType = MessageProcessor.sortedMessageTypes.get(i);
-                    String message = MessageProcessor.sortedMessages.get(i);
-                    String color = getColorByMessageType(messageType);
-                    System.out.println(color + message);
-
-                    // Set the visibility to false so it won't be displayed again
-                    MessageProcessor.sortedVisibleToConsole.set(i, false);
-                }
-            }
-        } else {
-            System.out.println("Console: ");
-            System.out.println("No Messages");
-        }
+        MessageProcessor.displayMessages();
         return null;
     }
 
