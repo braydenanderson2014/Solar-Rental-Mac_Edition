@@ -87,6 +87,112 @@ public class SettingsController {
     public static void ApplySettings() {
         MessageProcessor.processMessage(2, "Applying Settings", false);
         //Code to apply settings goes here
+        String Setting = "Debug Color";
+        if(checkSetting(Setting) == true) {
+            MessageProcessor.processMessage(0, "Setting: " + Setting + " found.", true);
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " value: " + Settings.getProperty(Setting), false);
+            String color = MessageProcessor.getColorCodeByName(Settings.getProperty(Setting));
+            MessageProcessor.setMessageTypeColor(2, color);
+        } else {
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " not found.", false);
+        }
+        Setting = "Info Color";
+        if(checkSetting(Setting) == true) {
+            MessageProcessor.processMessage(0, "Setting: " + Setting + " found.", true);
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " value: " + Settings.getProperty(Setting), false);
+            String color = MessageProcessor.getColorCodeByName(Settings.getProperty(Setting));
+            MessageProcessor.setMessageTypeColor(1, color);
+        } else {
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " not found.", false);
+        }
+        Setting = "Warning Color";
+        if(checkSetting(Setting) == true) {
+            MessageProcessor.processMessage(0, "Setting: " + Setting + " found.", true);
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " value: " + Settings.getProperty(Setting), false);
+            String color = MessageProcessor.getColorCodeByName(Settings.getProperty(Setting));
+            MessageProcessor.setMessageTypeColor(-1, color);
+        } else {
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " not found.", false);
+        }
+        Setting = "Error Color";
+        if(checkSetting(Setting) == true) {
+            MessageProcessor.processMessage(0, "Setting: " + Setting + " found.", true);
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " value: " + Settings.getProperty(Setting), false);
+            String color = MessageProcessor.getColorCodeByName(Settings.getProperty(Setting));
+            MessageProcessor.setMessageTypeColor(-2, color);
+        } else {
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " not found.", false);
+        }
+        Setting = "System Color";
+        if(checkSetting(Setting) == true) {
+            MessageProcessor.processMessage(0, "Setting: " + Setting + " found.", true);
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " value: " + Settings.getProperty(Setting), false);
+            String color = MessageProcessor.getColorCodeByName(Settings.getProperty(Setting));
+            MessageProcessor.setMessageTypeColor(0, color);
+        } else {
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " not found.", false);
+        }
+
+        Setting = "Display Debug Messages";
+        if(checkSetting(Setting) == true) {
+            MessageProcessor.processMessage(0, "Setting: " + Setting + " found.", true);
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " value: " + Settings.getProperty(Setting), false);
+            MessageProcessor.setMessageTypeVisibility(2, Boolean.parseBoolean(getSetting(Setting)));
+        } else {
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " not found.", false);
+        }
+
+        Setting = "Display Info Messages";
+        if(checkSetting(Setting) == true) {
+            MessageProcessor.processMessage(0, "Setting: " + Setting + " found.", true);
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " value: " + Settings.getProperty(Setting), false);
+            MessageProcessor.setMessageTypeVisibility(1, Boolean.parseBoolean(getSetting(Setting)));
+        } else {
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " not found.", false);
+        }
+
+        Setting = "Display Warning Messages";
+        if(checkSetting(Setting) == true) {
+            MessageProcessor.processMessage(0, "Setting: " + Setting + " found.", true);
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " value: " + Settings.getProperty(Setting), false);
+            MessageProcessor.setMessageTypeVisibility(-1, Boolean.parseBoolean(getSetting(Setting)));
+        } else {
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " not found.", false);
+        }
+
+        Setting = "Display Error Messages";
+        if(checkSetting(Setting) == true) {
+            MessageProcessor.processMessage(0, "Setting: " + Setting + " found.", true);
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " value: " + Settings.getProperty(Setting), false);
+            MessageProcessor.setMessageTypeVisibility(-2, Boolean.parseBoolean(getSetting(Setting)));
+        } else {
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " not found.", false);
+        }
+
+        Setting = "Display System Messages";
+        if(checkSetting(Setting) == true) {
+            MessageProcessor.processMessage(0, "Setting: " + Setting + " found.", true);
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " value: " + Settings.getProperty(Setting), false);
+            MessageProcessor.setMessageTypeVisibility(0, Boolean.parseBoolean(getSetting(Setting)));
+        } else {
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " not found.", false);
+        }
+
+        Setting = "Console Length";
+        if(checkSetting(Setting) == true) {
+            MessageProcessor.processMessage(0, "Setting: " + Setting + " found.", true);
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " value: " + Settings.getProperty(Setting), true);
+            MessageProcessor.setMaxMessages(Integer.parseInt(getSetting(Setting)));
+        } else {
+            MessageProcessor.processMessage(2, "Setting: " + Setting + " not found.", true);
+        }
+
+
+
+
+
+
+
         
         MessageProcessor.processMessage(2, "Settings Applied", false);
     }
