@@ -69,7 +69,7 @@ public class AutoSetup {
         if(SettingsController.checkSetting("Log Type") == false) {
             SettingsController.setProperty("Log Type", "all");
         }
-
+        
 
         SettingsController.saveSettings();
         SetupUserController.CreateAdminUser();
