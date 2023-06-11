@@ -1,6 +1,5 @@
 package com.solarrentalmac.SelfUpdater;
 
-
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
@@ -26,7 +25,9 @@ import java.util.Collections;
 public class Updater {
 
     private static final Path UPDATE_FOLDER = Paths.get("update");
-    private static final String CREDENTIALS_FILE_PATH = "/path/to/your/service/account/credentials.json";
+    private static String userHome = System.getProperty("user.home");
+    private static String updateFolder = "/SolarRentalMac/";
+    private static final String CREDENTIALS_FILE_PATH = userHome + updateFolder + "solarrentalmacedition-c437bfe2c34d.json";
     private static final String DRIVE_FOLDER_ID = "folderId"; // Folder id in Google Drive where source code is located
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
@@ -60,29 +61,28 @@ public class Updater {
     }
 
     private void downloadSourceCode() throws IOException, GeneralSecurityException {
-    GoogleCredentials credentials = GoogleCredentials
-            .fromStream(Files.newInputStream(Paths.get(CREDENTIALS_FILE_PATH)))
-            .createScoped(Collections.singletonList("https://www.googleapis.com/auth/drive.readonly"));
-    Drive driveService = new Drive.Builder(
-            GoogleNetHttpTransport.newTrustedTransport(),
-            GsonFactory.getDefaultInstance(),
-            new HttpCredentialsAdapter(credentials))
-            .setApplicationName("SelfUpdater")
-            .build();
+        GoogleCredentials credentials = GoogleCredentials
+                .fromStream(Files.newInputStream(Paths.get(CREDENTIALS_FILE_PATH)))
+                .createScoped(Collections.singletonList("https://www.googleapis.com/auth/drive.readonly"));
+        Drive driveService = new Drive.Builder(
+                GoogleNetHttpTransport.newTrustedTransport(),
+                GsonFactory.getDefaultInstance(),
+                new HttpCredentialsAdapter(credentials))
+                .setApplicationName("SelfUpdater")
+                .build();
 
-    FileList result = driveService.files().list()
-            .setQ("'" + DRIVE_FOLDER_ID + "' in parents")
-            .execute();
+        FileList result = driveService.files().list()
+                .setQ("'" + DRIVE_FOLDER_ID + "' in parents")
+                .execute();
 
-    for (com.google.api.services.drive.model.File file : result.getFiles()) {
-        if (file.getName().endsWith(".java")) {
-            try (OutputStream outputStream = new FileOutputStream(UPDATE_FOLDER.resolve(file.getName()).toFile())) {
-                driveService.files().get(file.getId()).executeMediaAndDownloadTo(outputStream);
+        for (com.google.api.services.drive.model.File file : result.getFiles()) {
+            if (file.getName().endsWith(".java")) {
+                try (OutputStream outputStream = new FileOutputStream(UPDATE_FOLDER.resolve(file.getName()).toFile())) {
+                    driveService.files().get(file.getId()).executeMediaAndDownloadTo(outputStream);
+                }
             }
         }
     }
-}
-
 
     private void compileSourceCode() throws IOException {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();

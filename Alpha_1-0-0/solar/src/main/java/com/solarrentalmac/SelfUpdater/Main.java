@@ -1,7 +1,10 @@
 package com.solarrentalmac.SelfUpdater;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
+import com.solarrentalmac.Logging.MessageProcessor;
 import com.solarrentalmac.Main.ProgramStart;
 
 public class Main {
@@ -14,8 +17,14 @@ public class Main {
             try {
                 updater.startUpdate();
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
+                MessageProcessor.processMessage(-1, "Updater Failed to Start, Please try again later.", true);
+                MessageProcessor.processMessage(-2, "Updater Failed to Start, Please try again later." + e.toString(), false);
                 e.printStackTrace();
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                String sStackTrace = sw.toString(); // stack trace as a string
+                MessageProcessor.processMessage(2, sStackTrace, false);
             }
             System.exit(0);
         }
