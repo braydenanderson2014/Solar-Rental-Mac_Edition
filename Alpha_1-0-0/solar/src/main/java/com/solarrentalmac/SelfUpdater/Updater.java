@@ -1,118 +1,126 @@
 package com.solarrentalmac.SelfUpdater;
 
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.File;
-import com.google.api.services.drive.model.FileList;
-import com.google.auth.http.HttpCredentialsAdapter;
-import com.google.auth.oauth2.GoogleCredentials;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.NoHeadException;
 
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
-import java.io.FileOutputStream;
+
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.GeneralSecurityException;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Updater {
 
-    private static final Path UPDATE_FOLDER = Paths.get("update");
-    private static String userHome = System.getProperty("user.home");
-    private static String updateFolder = "/SolarRentalMac/";
-    private static final String CREDENTIALS_FILE_PATH = userHome + updateFolder + "solarrentalmacedition-c437bfe2c34d.json";
-    private static final String DRIVE_FOLDER_ID = "folderId"; // Folder id in Google Drive where source code is located
-    private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
+    private static final Path REPO_PATH = Paths.get("/Users/braydenanderson/Documents/GitHub/Solar-Rental-Mac_Edition");
+    private static final String REPO_URL = "https://github.com/braydenanderson2014/Solar-Rental-Mac_Edition.git"; // replace with your repo URL
+    private static final Path COMPILED_FOLDER = Path.of("compiled");
 
-    public boolean isUpdateAvailable() throws IOException {
-        // For simplicity, let's assume that we always have an update.
-        // In real scenarios, you would need to implement version checking logic here.
-        return true;
-    }
-
-    public void startUpdate() throws IOException, InterruptedException {
-        if (!isUpdateAvailable()) {
-            System.out.println("No updates available.");
-            return;
-        }
-
-        System.out.println("Update available. Updating...");
-
-        // Download source code
-        try {
-            downloadSourceCode();
-        } catch (GeneralSecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        // Compile source code
-        compileSourceCode();
-
-        // Delete source code
-        deleteSourceCode();
-    }
-
-    private void downloadSourceCode() throws IOException, GeneralSecurityException {
-        GoogleCredentials credentials = GoogleCredentials
-                .fromStream(Files.newInputStream(Paths.get(CREDENTIALS_FILE_PATH)))
-                .createScoped(Collections.singletonList("https://www.googleapis.com/auth/drive.readonly"));
-        Drive driveService = new Drive.Builder(
-                GoogleNetHttpTransport.newTrustedTransport(),
-                GsonFactory.getDefaultInstance(),
-                new HttpCredentialsAdapter(credentials))
-                .setApplicationName("SelfUpdater")
-                .build();
-
-        FileList result = driveService.files().list()
-                .setQ("'" + DRIVE_FOLDER_ID + "' in parents")
-                .execute();
-
-        for (com.google.api.services.drive.model.File file : result.getFiles()) {
-            if (file.getName().endsWith(".java")) {
-                try (OutputStream outputStream = new FileOutputStream(UPDATE_FOLDER.resolve(file.getName()).toFile())) {
-                    driveService.files().get(file.getId()).executeMediaAndDownloadTo(outputStream);
-                }
+    public void updateFromGitHub() throws IOException, GitAPIException {
+        File folder = REPO_PATH.toFile();
+        if (folder.exists()) {
+            try (Git git = Git.open(folder)) {
+                git.pull().call();
             }
+        } else {
+            Git.cloneRepository()
+                    .setURI(REPO_URL)
+                    .setDirectory(folder)
+                    .call();
         }
     }
 
-    private void compileSourceCode() throws IOException {
+    public void compileSourceCode() throws IOException {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         if (compiler == null) {
             throw new RuntimeException(
-                    "Cannot find system Java compiler. Ensure JDK is properly installed and configured.");
+                    "Cannot find system Java compiler. Ensure JDK is installed and properly set up.");
         }
 
-        try (InputStream systemIn = System.in; // Pass system streams to compiler (optional)
-                OutputStream systemOut = System.out;
-                OutputStream systemErr = System.err) {
-            Files.walk(UPDATE_FOLDER)
-                    .filter(path -> path.toString().endsWith(".java"))
-                    .forEach(path -> {
-                        int result = compiler.run(systemIn, systemOut, systemErr, path.toString());
-                        if (result != 0) {
-                            throw new RuntimeException("Failed to compile source code: " + path);
-                        }
-                    });
+        List<String> sourceFiles = new ArrayList<>();
+        Files.walk(REPO_PATH)
+                .filter(path -> path.toString().endsWith(".java"))
+                .forEach(path -> sourceFiles.add(path.toString()));
+
+        int result = compiler.run(null, null, null, sourceFiles.toArray(new String[0]));
+
+        if (result != 0) {
+            throw new RuntimeException("Failed to compile source code.");
         }
+
+        // You would need to create a JAR file from these .class files
+        // This step is omitted here for simplicity
     }
 
-    private void deleteSourceCode() throws IOException {
-        Files.walk(UPDATE_FOLDER)
+    public void deleteSourceCode() throws IOException {
+        Files.walk(REPO_PATH)
+                .filter(path -> path.toString().endsWith(".java"))
                 .forEach(path -> {
                     try {
                         Files.delete(path);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
                 });
+    }
+
+    public void compileWithMaven() throws IOException {
+        ProcessBuilder pb = new ProcessBuilder("mvn", "clean", "install");
+        pb.directory(REPO_PATH.toFile()); // Set the working directory to your project directory
+        Process p = pb.start(); // Start the process
+
+        // If you want to read the output
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Wait for the process to finish and check the exit value
+        try {
+            int exitCode = p.waitFor();
+            if (exitCode != 0) {
+                throw new RuntimeException("Maven compile failed with exit code " + exitCode);
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Maven compile process was interrupted", e);
+        }
+    }
+
+    public void startUpdate() throws IOException, InterruptedException {
+        try {
+            updateFromGitHub();
+        } catch (GitAPIException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        compileSourceCode();
+
+        compileWithMaven();
+        deleteSourceCode();
+    }
+
+    public boolean isUpdateAvailable() throws IOException, InterruptedException, NoHeadException, GitAPIException {
+        File folder = REPO_PATH.toFile();
+        if (!folder.exists()) {
+            return true;
+        }
+
+        try (Git git = Git.open(folder)) {
+            String currentCommit = git.log().setMaxCount(1).call().iterator().next().getName();
+            git.fetch().call();
+            String latestCommit = git.log().setMaxCount(1).call().iterator().next().getName();
+            return !currentCommit.equals(latestCommit);
+        }
     }
 }

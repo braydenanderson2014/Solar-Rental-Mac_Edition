@@ -1,6 +1,9 @@
 package com.solarrentalmac.Assets;
 import java.io.IOException;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.NoHeadException;
+
 import com.solarrentalmac.Logging.MessageProcessor;
 import com.solarrentalmac.Main.SettingsController;
 import com.solarrentalmac.SelfUpdater.Updater;
@@ -14,7 +17,7 @@ public class VersionController {
             return "1.0.0";
         }
     }
-    public static Boolean checkUpdates() {
+    public static Boolean checkUpdates() throws NoHeadException, InterruptedException, GitAPIException {
         if(SettingsController.checkSetting("Update Check") == true) {
             if(SettingsController.getSetting("Update Check").equals("true")) {
                 Updater updater = new Updater();
