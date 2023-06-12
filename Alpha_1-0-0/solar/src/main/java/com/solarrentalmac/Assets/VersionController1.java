@@ -7,7 +7,7 @@ import org.eclipse.jgit.api.errors.NoHeadException;
 import com.solarrentalmac.Logging.MessageProcessor;
 import com.solarrentalmac.Main.SettingsController;
 import com.solarrentalmac.SelfUpdater.Updater;
-public class VersionController {
+public class VersionController1 {
     public static String Version;
     public static String getVersionNumber() {
         if(SettingsController.checkSetting("Current Version") == true) {

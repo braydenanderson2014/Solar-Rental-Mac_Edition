@@ -53,6 +53,11 @@
             <artifactId>org.eclipse.jgit</artifactId>
             <version>5.11.0.202103091610-r</version> <!-- Check for the latest version -->
         </dependency>
+    <dependency>
+    <groupId>ch.qos.logback</groupId>
+    <artifactId>logback-classic</artifactId>
+    <version>1.4.7</version>
+</dependency>
 
     </dependencies>
 </project>
