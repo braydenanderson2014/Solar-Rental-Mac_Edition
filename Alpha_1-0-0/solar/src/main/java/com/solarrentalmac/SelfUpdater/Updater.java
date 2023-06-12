@@ -46,7 +46,7 @@ public class Updater {
 
     public void compileSourceCode() throws IOException {
         MessageProcessor.processMessage(2, "Compiling Code...", true);
-        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+                                                                                   JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         if (compiler == null) {
             MessageProcessor.processMessage(-1,
                     "Cannot find system Java compiler. Ensure JDK is installed and properly set up.", true);
